@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Admin – Sinawan Collection</title>
+<style>
+:root{--accent:#7a1f3d;--accent2:#5e1730;--bg:#faf7f2;--ink:#1c1917;--mute:#78716c;--line:#e7e0d6;--bad:#b91c1c;--ok:#15803d;box-sizing:border-box}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.top{background:var(--accent);color:#fff;height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+.top b{font-family:Georgia,serif;font-size:18px}
+.wrap{max-width:900px;margin:0 auto;padding:16px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{height:38px;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:700;color:var(--mute);cursor:pointer}
+.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.card h3{margin:0 0 4px;font-size:16px}.hint{margin:0 0 12px;color:var(--mute);font-size:13px;line-height:1.55}
+label{display:block;font-size:12px;font-weight:700;color:var(--mute);margin:12px 0 4px}
+input[type=text],input[type=email],input[type=password],input[type=url],input[type=number],select,textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:15px;color:var(--ink);background:#fff}
+input,select{height:42px}textarea{min-height:130px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(122,31,61,.13)}
+.btn{height:40px;padding:0 16px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.btn:hover{background:var(--accent2)}.btn.ghost{background:#f3ede4;color:var(--ink)}.btn.bad{background:#fee2e2;color:var(--bad)}.btn.sm{height:34px;padding:0 10px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:8px;flex-wrap:wrap}
+.row.off{opacity:.55}.row .grow{flex:1;min-width:150px}
+.thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#f3ede4;flex:none;display:grid;place-items:center;color:var(--mute);font-size:11px;text-align:center}
+.chk{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;margin:0;color:var(--ink)}.chk input{width:18px;height:18px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.full{grid-column:1/-1}
+.imgs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.im{position:relative;width:84px;height:84px;border-radius:10px;overflow:hidden;border:2px solid var(--line);background:#f3ede4}
+.im img{width:100%;height:100%;object-fit:cover;display:block}
+.im.main{border-color:var(--accent)}
+.im button{position:absolute;border:0;cursor:pointer;font-weight:700}
+.im .rm{top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:14px;line-height:1}
+.im .mk{left:3px;bottom:3px;background:rgba(255,255,255,.92);border-radius:6px;font-size:10px;padding:2px 6px;color:var(--ink)}
+.im .mn{left:3px;bottom:3px;background:var(--accent);border-radius:6px;font-size:10px;padding:2px 6px;color:#fff}
+.slidepic{width:200px;height:112px;border-radius:10px;object-fit:contain;background:#1c1917;flex:none}
+.muted{color:var(--mute);font-size:13px}
+.price{font-weight:800;color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;z-index:20;max-width:90vw}.toast.err{background:var(--bad)}
+.login{max-width:380px;margin:12vh auto;padding:0 16px}
+.add{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}.add .grow{flex:1;min-width:160px}
+@media(max-width:560px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="login" id="login">
+  <div class="card">
+    <h3>Admin login</h3><p class="hint">Sinawan Collection control panel</p>
+    <label for="em">Email</label><input id="em" type="email" autocomplete="username">
+    <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+    <p style="margin:14px 0 0"><button class="btn" id="go" style="width:100%">Log in</button></p>
+    <p class="muted" id="lerr" style="color:var(--bad)"></p>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <div class="top"><b>Sinawan Collection · Admin</b><button class="btn ghost sm" id="out">Log out</button></div>
+  <div class="wrap">
+    <div class="tabs">
+      <button data-t="products" class="on">Products</button>
+      <button data-t="slider">Slider pictures</button>
+      <button data-t="cats">Categories</button>
+      <button data-t="settings">Shop settings</button>
+    </div>
+
+    <!-- PRODUCTS -->
+    <section id="t-products">
+      <div class="card" id="pform" hidden>
+        <h3 id="ptitle">Add a product</h3>
+        <p class="hint">Fill in what you know. Only the name, category and price are required.</p>
+        <div class="two">
+          <div class="full"><label for="f-name">Product name</label><input id="f-name" type="text" placeholder="e.g. Cotton bed sheet with 2 pillow covers"></div>
+          <div><label for="f-cat">Category</label><select id="f-cat"></select></div>
+          <div><label for="f-price">Price (Rs)</label><input id="f-price" type="number" min="0" inputmode="numeric" placeholder="2500"></div>
+          <div><label for="f-old">Old price (Rs), optional</label><input id="f-old" type="number" min="0" inputmode="numeric" placeholder="3000, shows a sale tag"></div>
+          <div><label for="f-sizes">Sizes, optional (separate with commas)</label><input id="f-sizes" type="text" placeholder="S, M, L  or  Single, Double, King"></div>
+          <div class="full"><label for="f-desc">Details (fabric, colours, care, what is in the pack…)</label><textarea id="f-desc" placeholder="Fabric: 100% cotton&#10;Colours: blue, grey&#10;Pack includes: 1 sheet + 2 pillow covers&#10;Wash: machine wash cold"></textarea></div>
+        </div>
+        <label>Pictures (the first one is the main picture)</label>
+        <div class="imgs" id="f-imgs"></div>
+        <button class="btn ghost sm" id="f-pick" type="button">+ Add pictures</button>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:14px">
+          <label class="chk"><input type="checkbox" id="f-stock" checked> In stock</label>
+          <label class="chk"><input type="checkbox" id="f-active" checked> Show on the website</label>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn" id="f-save" type="button">Save product</button>
+          <button class="btn ghost" id="f-cancel" type="button">Cancel</button>
+        </div>
+      </div>
+
+      <div class="card" id="plistbar">
+        <div class="add">
+          <button class="btn" id="p-new">+ Add a product</button>
+          <div class="grow"><label for="p-search" style="margin-top:0">Search</label><input id="p-search" type="text" placeholder="Search your products"></div>
+        </div>
+        <p class="muted" id="pcount" style="margin:10px 0 0"></p>
+      </div>
+      <div id="pl"></div>
+    </section>
+
+    <!-- SLIDER -->
+    <section id="t-slider" hidden>
+      <div class="card">
+        <h3>Slider pictures</h3>
+        <p class="hint">These pictures move across the top of your website. Add as many as you like (choose several at once). The whole picture is always shown. Wide pictures (16:9) fill the slider best. You can write a heading and some text under each picture.</p>
+        <button class="btn" id="s-add">+ Add pictures</button>
+      </div>
+      <div id="sl"></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section id="t-cats" hidden>
+      <div class="card">
+        <h3>Categories</h3>
+        <p class="hint">Customers can filter your products by these (for example Clothes, Shoes, Bed Sheets, Kids Clothes).</p>
+        <div class="add"><div class="grow"><label for="c-new" style="margin-top:0">New category</label><input id="c-new" type="text" placeholder="e.g. Women"></div><button class="btn" id="c-add">Add</button></div>
+      </div>
+      <div id="cl"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="t-settings" hidden>
+      <div class="card">
+        <h3>Contact links</h3>
+        <p class="hint">Shown as buttons on your website. Leave Facebook or Instagram empty to hide them.</p>
+        <label>WhatsApp number (country code, no plus or spaces)</label><input id="s-whatsapp" type="text" inputmode="numeric" placeholder="923012193254">
+        <label>Facebook page link</label><input id="s-facebook" type="url" placeholder="https://facebook.com/yourpage">
+        <label>Instagram link</label><input id="s-instagram" type="url" placeholder="https://instagram.com/yourname">
+      </div>
+      <div class="card">
+        <h3>Delivery</h3>
+        <label>Delivery charges (Rs). 0 means no charge</label><input id="s-delivery_charge" type="number" min="0" inputmode="numeric" placeholder="250">
+        <label>Free delivery on orders above (Rs). 0 means never free</label><input id="s-free_over" type="number" min="0" inputmode="numeric" placeholder="5000">
+        <p style="margin:16px 0 0"><button class="btn" id="s-save">Save settings</button></p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* ===== PASTE YOUR SUPABASE DETAILS (Project Settings > API). Use the public "publishable / anon" key only. ===== */
+const SUPABASE_URL = "";
+const SUPABASE_KEY = "";
+/* ================================================================================================================ */
+
+const $ = id => document.getElementById(id);
+const sb = window.supabase.createClient(SUPABASE_URL || "https://example.supabase.co", SUPABASE_KEY || "missing");
+const BUCKET = "store";
+let usedFallback = false;
+
+function toast(m, err) { const t = document.createElement("div"); t.className = "toast" + (err ? " err" : ""); t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 2800); }
+const fail = e => { console.error(e); toast((e && e.message) || "Something went wrong", true); };
+
+/* ---------- pictures: shrunk in the browser, then saved ---------- */
+function pickMany(multiple = true) { return new Promise(res => { const i = document.createElement("input"); i.type = "file"; i.accept = "image/*"; i.multiple = multiple; i.onchange = () => res([...i.files]); i.click(); }); }
+function photoBlob(file, max) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const w = Math.min(max, img.width), h = Math.round(img.height * w / img.width);
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, w, h); x.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url); c.toBlob(b => b ? res(b) : rej(new Error("Could not process " + file.name)), "image/jpeg", .82);
+    };
+    img.onerror = () => rej(new Error("Could not read " + file.name)); img.src = url;
+  });
+}
+const blobToData = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+async function savePhoto(file, max, folder) {
+  const blob = await photoBlob(file, max);
+  const path = folder + "/" + Date.now() + "-" + Math.random().toString(36).slice(2, 8) + ".jpg";
+  const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: "image/jpeg", cacheControl: "31536000" });
+  if (!error) return sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  console.warn("Storage upload failed, saving inside the database instead", error);
+  usedFallback = true; return blobToData(blob);
+}
+const storagePath = url => { const m = (url || "").match(new RegExp("/storage/v1/object/public/" + BUCKET + "/(.+)$")); return m ? decodeURIComponent(m[1]) : null; };
+async function dropPhotos(urls) { const ps = (urls || []).map(storagePath).filter(Boolean); if (ps.length) { try { await sb.storage.from(BUCKET).remove(ps); } catch (e) { console.warn(e); } } }
+
+/* ---------- login ---------- */
+async function login() { $("lerr").textContent = ""; const { error } = await sb.auth.signInWithPassword({ email: $("em").value.trim(), password: $("pw").value }); if (error) $("lerr").textContent = error.message; }
+$("go").onclick = login; $("pw").addEventListener("keydown", e => { if (e.key === "Enter") login(); });
+$("out").onclick = () => sb.auth.signOut();
+function show(on) { $("login").hidden = on; $("app").hidden = !on; if (on) { loadCats().then(loadProducts); loadSlides(); loadSettings(); } }
+sb.auth.onAuthStateChange((_e, s) => show(!!s));
+sb.auth.getSession().then(({ data }) => show(!!data.session));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  ["products", "slider", "cats", "settings"].forEach(t => $("t-" + t).hidden = t !== b.dataset.t);
+});
+
+/* ---------- helpers ---------- */
+async function update(table, id, patch) { const { error } = await sb.from(table).update(patch).eq("id", id); if (error) { fail(error); return false; } return true; }
+async function remove(table, id) { const { error } = await sb.from(table).delete().eq("id", id); if (error) { fail(error); return false; } return true; }
+async function move(arr, table, i, d) {
+  const j = i + d; if (j < 0 || j >= arr.length) return false;
+  [arr[i], arr[j]] = [arr[j], arr[i]];
+  const jobs = [];
+  arr.forEach((x, k) => { const s = (k + 1) * 10; if (x.sort !== s) { x.sort = s; jobs.push(sb.from(table).update({ sort: s }).eq("id", x.id)); } });
+  const rs = await Promise.all(jobs), bad = rs.find(r => r.error);
+  if (bad) { fail(bad.error); return false; } return true;
+}
+function btn(label, cls, fn) { const b = document.createElement("button"); b.className = "btn sm " + (cls || "ghost"); b.textContent = label; b.type = "button"; b.onclick = fn; return b; }
+function chk(label, checked, fn) { const l = document.createElement("label"); l.className = "chk"; const c = document.createElement("input"); c.type = "checkbox"; c.checked = checked; c.onchange = () => fn(c.checked); l.append(c, label); return l; }
+const rs = n => "Rs " + Number(n || 0).toLocaleString("en-US");
+function field(label, val, cls) { const w = document.createElement("div"); w.className = cls || ""; const l = document.createElement("label"); l.textContent = label; const i = document.createElement("input"); i.type = "text"; i.value = val || ""; w.append(l, i); return [w, i]; }
+
+/* ---------- categories ---------- */
+let cats = [];
+async function loadCats() { const { data, error } = await sb.from("store_categories").select("*").order("sort").order("id"); if (error) return fail(error); cats = data; drawCats(); fillCatSelect(); }
+function drawCats() {
+  const box = $("cl"); box.innerHTML = "";
+  if (!cats.length) box.innerHTML = '<p class="muted">No categories yet. Add one above.</p>';
+  cats.forEach((c, i) => {
+    const r = document.createElement("div"); r.className = "row" + (c.active ? "" : " off");
+    const name = document.createElement("input"); name.type = "text"; name.className = "grow"; name.value = c.name;
+    name.onchange = async () => {
+      const v = name.value.trim(); if (!v) { name.value = c.name; return; }
+      if (await update("store_categories", c.id, { name: v })) {
+        await sb.from("store_products").update({ category: v }).eq("category", c.name);   // products follow the new name
+        c.name = v; toast("Saved"); fillCatSelect(); loadProducts();
+      }
+    };
+    r.append(name,
+      chk("Show", c.active, async v => { if (await update("store_categories", c.id, { active: v })) { c.active = v; r.classList.toggle("off", !v); } }),
+      btn("▲", "ghost", async () => { if (await move(cats, "store_categories", i, -1)) { drawCats(); fillCatSelect(); } }),
+      btn("▼", "ghost", async () => { if (await move(cats, "store_categories", i, 1)) { drawCats(); fillCatSelect(); } }),
+      btn("Delete", "bad", async () => { if (confirm('Delete the category "' + c.name + '"? Products in it are kept.') && await remove("store_categories", c.id)) { cats = cats.filter(x => x.id !== c.id); drawCats(); fillCatSelect(); } }));
+    box.appendChild(r);
+  });
+}
+$("c-add").onclick = async () => {
+  const n = $("c-new").value.trim(); if (!n) return toast("Enter a category name", true);
+  const sort = cats.length ? Math.max(...cats.map(c => c.sort)) + 10 : 10;
+  const { error } = await sb.from("store_categories").insert({ name: n, sort }); if (error) return fail(error);
+  $("c-new").value = ""; toast("Category added"); loadCats();
+};
+function fillCatSelect(sel) {
+  const s = $("f-cat"), keep = sel || s.value;
+  s.innerHTML = cats.map(c => `<option>${c.name.replace(/[&<>"]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]))}</option>`).join("");
+  if (keep && [...s.options].some(o => o.value === keep)) s.value = keep;
+}
+
+/* ---------- products ---------- */
+let products = [], formImgs = [], editId = null;
+async function loadProducts() { const { data, error } = await sb.from("store_products").select("*").order("sort").order("id", { ascending: false }); if (error) { $("pl").innerHTML = '<p class="muted">The store tables are missing. Run the store SQL in Supabase first, then refresh this page.</p>'; return; } products = data; drawProducts(); }
+function drawProducts() {
+  const box = $("pl"), term = $("p-search").value.trim().toLowerCase(); box.innerHTML = "";
+  const list = products.filter(p => (p.name + " " + (p.category || "")).toLowerCase().includes(term));
+  $("pcount").textContent = products.length + " products";
+  if (!list.length) box.innerHTML = '<p class="muted">' + (products.length ? "Nothing found." : 'No products yet. Press "+ Add a product".') + "</p>";
+  list.forEach(p => {
+    const idx = products.indexOf(p), r = document.createElement("div"); r.className = "row" + (p.active ? "" : " off");
+    const imgs = Array.isArray(p.images) ? p.images : [];
+    let th; if (imgs[0]) { th = document.createElement("img"); th.src = imgs[0]; th.alt = ""; } else { th = document.createElement("div"); th.textContent = "No picture"; }
+    th.className = "thumb";
+    const info = document.createElement("div"); info.className = "grow";
+    const b = document.createElement("b"); b.textContent = p.name; const s = document.createElement("div"); s.className = "muted";
+    s.textContent = (p.category || "No category") + " · " + imgs.length + " picture" + (imgs.length === 1 ? "" : "s");
+    const pr = document.createElement("div"); pr.className = "price"; pr.textContent = rs(p.price) + (p.old_price ? "  (was " + rs(p.old_price) + ")" : "");
+    info.append(b, s, pr);
+    r.append(th, info,
+      chk("In stock", p.in_stock !== false, async v => { if (await update("store_products", p.id, { in_stock: v })) p.in_stock = v; }),
+      chk("Show", p.active, async v => { if (await update("store_products", p.id, { active: v })) { p.active = v; r.classList.toggle("off", !v); } }),
+      btn("Edit", "ghost", () => openForm(p)),
+      btn("▲", "ghost", async () => { if (await move(products, "store_products", idx, -1)) drawProducts(); }),
+      btn("▼", "ghost", async () => { if (await move(products, "store_products", idx, 1)) drawProducts(); }),
+      btn("Delete", "bad", async () => { if (confirm('Delete "' + p.name + '"?') && await remove("store_products", p.id)) { await dropPhotos(imgs); products = products.filter(x => x.id !== p.id); drawProducts(); } }));
+    box.appendChild(r);
+  });
+}
+$("p-search").oninput = drawProducts;
+function drawFormImgs() {
+  const box = $("f-imgs"); box.innerHTML = "";
+  formImgs.forEach((u, i) => {
+    const d = document.createElement("div"); d.className = "im" + (i === 0 ? " main" : "");
+    const im = document.createElement("img"); im.src = u; im.alt = "";
+    const x = document.createElement("button"); x.className = "rm"; x.type = "button"; x.textContent = "×"; x.setAttribute("aria-label", "Remove picture");
+    x.onclick = () => { formImgs.splice(i, 1); drawFormImgs(); };
+    const m = document.createElement("button"); m.type = "button";
+    if (i === 0) { m.className = "mn"; m.textContent = "Main"; } else { m.className = "mk"; m.textContent = "Make main"; m.onclick = () => { formImgs.unshift(formImgs.splice(i, 1)[0]); drawFormImgs(); }; }
+    d.append(im, x, m); box.appendChild(d);
+  });
+}
+function openForm(p) {
+  editId = p ? p.id : null; formImgs = p && Array.isArray(p.images) ? [...p.images] : [];
+  $("ptitle").textContent = p ? "Edit product" : "Add a product";
+  fillCatSelect(p ? p.category : "");
+  $("f-name").value = p ? p.name : ""; $("f-price").value = p ? p.price : ""; $("f-old").value = p && p.old_price ? p.old_price : "";
+  $("f-sizes").value = p ? (p.sizes || "") : ""; $("f-desc").value = p ? (p.description || "") : "";
+  $("f-stock").checked = p ? p.in_stock !== false : true; $("f-active").checked = p ? !!p.active : true;
+  drawFormImgs(); $("pform").hidden = false; $("plistbar").hidden = true; $("pl").hidden = true; window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function closeForm() { $("pform").hidden = true; $("plistbar").hidden = false; $("pl").hidden = false; }
+$("p-new").onclick = () => { if (!cats.length) return toast("Add a category first (Categories tab)", true); openForm(null); };
+$("f-cancel").onclick = closeForm;
+$("f-pick").onclick = async () => {
+  const files = await pickMany(); if (!files.length) return; usedFallback = false;
+  for (let k = 0; k < files.length; k++) { toast("Uploading " + (k + 1) + " of " + files.length + "…"); try { formImgs.push(await savePhoto(files[k], 1100, "products")); drawFormImgs(); } catch (e) { fail(e); } }
+  toast(files.length + " picture(s) added" + (usedFallback ? ". Run the store SQL in Supabase to make pictures load faster." : ""));
+};
+$("f-save").onclick = async () => {
+  const name = $("f-name").value.trim(), price = Number($("f-price").value), old = Number($("f-old").value);
+  if (!name) return toast("Enter the product name", true);
+  if (!$("f-cat").value) return toast("Choose a category", true);
+  if (!(price >= 0) || $("f-price").value === "") return toast("Enter the price", true);
+  const rec = { name, category: $("f-cat").value, price, old_price: old > price ? old : null, sizes: $("f-sizes").value.trim(), description: $("f-desc").value.trim(), images: formImgs, in_stock: $("f-stock").checked, active: $("f-active").checked };
+  $("f-save").disabled = true;
+  try {
+    if (editId) { const before = products.find(p => p.id === editId); if (!(await update("store_products", editId, rec))) return; await dropPhotos((before.images || []).filter(u => !formImgs.includes(u))); }
+    else { rec.sort = products.length ? Math.min(...products.map(p => p.sort)) - 10 : 10; const { error } = await sb.from("store_products").insert(rec); if (error) return fail(error); }
+    toast("Product saved"); closeForm(); loadProducts();
+  } finally { $("f-save").disabled = false; }
+};
+
+/* ---------- slider pictures ---------- */
+let slides = [];
+async function loadSlides() { const { data, error } = await sb.from("store_slides").select("*").order("sort").order("id"); if (error) return fail(error); slides = data; drawSlides(); }
+function drawSlides() {
+  const box = $("sl"); box.innerHTML = "";
+  if (!slides.length) box.innerHTML = '<p class="muted">No slider pictures yet. Press "+ Add pictures".</p>';
+  slides.forEach((o, i) => {
+    const r = document.createElement("div"); r.className = "row" + (o.active ? "" : " off");
+    const pic = document.createElement("img"); pic.className = "slidepic"; pic.src = o.image_url; pic.alt = "";
+    const g = document.createElement("div"); g.style.cssText = "flex:1;min-width:230px";
+    const [w1, title] = field("Heading (optional)", o.title), [w2, sub] = field("Text under the picture (optional)", o.subtitle);
+    const acts = document.createElement("div"); acts.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px";
+    acts.append(
+      btn("Save text", "", async () => { const patch = { title: title.value, subtitle: sub.value }; if (await update("store_slides", o.id, patch)) { Object.assign(o, patch); toast("Saved"); } }),
+      btn("Change picture", "ghost", async () => { const f = (await pickMany(false))[0]; if (!f) return; try { toast("Uploading…"); usedFallback = false; const u = await savePhoto(f, 1200, "slides"), old = o.image_url; if (await update("store_slides", o.id, { image_url: u })) { o.image_url = u; await dropPhotos([old]); drawSlides(); toast("Picture updated"); } } catch (e) { fail(e); } }),
+      chk("Show", o.active, async v => { if (await update("store_slides", o.id, { active: v })) { o.active = v; r.classList.toggle("off", !v); } }),
+      btn("▲", "ghost", async () => { if (await move(slides, "store_slides", i, -1)) drawSlides(); }),
+      btn("▼", "ghost", async () => { if (await move(slides, "store_slides", i, 1)) drawSlides(); }),
+      btn("Delete", "bad", async () => { if (confirm("Delete this slide?") && await remove("store_slides", o.id)) { await dropPhotos([o.image_url]); slides = slides.filter(x => x.id !== o.id); drawSlides(); } }));
+    g.append(w1, w2, acts); r.append(pic, g); box.appendChild(r);
+  });
+}
+$("s-add").onclick = async () => {
+  const files = await pickMany(); if (!files.length) return;
+  let sort = slides.length ? Math.max(...slides.map(o => o.sort)) : 0, ok = 0; usedFallback = false;
+  for (let k = 0; k < files.length; k++) {
+    toast("Uploading " + (k + 1) + " of " + files.length + "…");
+    try { const url = await savePhoto(files[k], 1200, "slides"); sort += 10; const { error } = await sb.from("store_slides").insert({ title: "", subtitle: "", image_url: url, sort }); if (error) throw error; ok++; } catch (e) { fail(e); }
+  }
+  toast(ok + " picture(s) added" + (usedFallback ? ". Run the store SQL in Supabase to make them load faster." : "")); loadSlides();
+};
+
+/* ---------- shop settings ---------- */
+const KEYS = ["whatsapp", "facebook", "instagram", "delivery_charge", "free_over"];
+async function loadSettings() { const { data, error } = await sb.from("store_settings").select("key,value"); if (error) return fail(error); data.forEach(r => { const el = $("s-" + r.key); if (el) el.value = r.value; }); }
+$("s-save").onclick = async () => {
+  const rows = KEYS.map(k => ({ key: k, value: k === "whatsapp" ? $("s-" + k).value.replace(/\D/g, "") : $("s-" + k).value.trim() }));
+  const bad = rows.find(r => (r.key === "facebook" || r.key === "instagram") && r.value && !/^https?:\/\//i.test(r.value));
+  if (bad) return toast("The " + bad.key + " link must start with https://", true);
+  const { error } = await sb.from("store_settings").upsert(rows, { onConflict: "key" });
+  if (error) return fail(error); toast("Saved. The website shows it on the next page load.");
+};
+
+if (!SUPABASE_URL || !SUPABASE_KEY) $("lerr").textContent = "Paste your Supabase URL and key at the top of this file first.";
+</script>
+</body>
+</html>
